@@ -1,7 +1,28 @@
-import React from 'react';
+import axios from './axios';
+import React, { useEffect, useState } from 'react';
 import "./Banner.css";
+import requests from './Requests';
 
 function Banner() {
+
+    const [movie, setMovie] = useState([]);
+
+    useEffect(()=>{
+        async function fetchData(){
+            const request = await axios.get(requests.fetchNetflixOriginals);
+            setMovie(
+                request.data.results[
+                  Math.floor(Math.random() * request.data.results.length - 1)
+                ]
+            );
+            return request;
+        }
+
+        fetchData();
+
+    }, []);
+
+    console.log(movie);
 
 
     function truncate(string, n){
@@ -15,12 +36,15 @@ function Banner() {
   return (
     <header className='banner' style={{
         backgroundSize: "cover",
-        backgroundImage: `url('https://upload.wikimedia.org/wikipedia/commons/thumb/c/cd/Black_flag.svg/1200px-Black_flag.svg.png')`,
+        backgroundImage: `url('https://image.tmdb.org/t/p/original/${movie?.
+    backdrop_path}')`,
         backgroundPosition: "center center",
     }}>
 
         <div className='banner__contents'>
-            <h1 className='banner__title'>Movie Name</h1>
+            <h1 className='banner__title'>
+                {movie?.title || movie?.name || movie?.original_name}
+            </h1>
             
              
 
@@ -30,14 +54,7 @@ function Banner() {
             </div>
 
             <h1 className='banner__discription'>
-                {truncate(`Contrary to popular belief, Lorem Ipsum is not simply random text.
-                 It has roots in a piece of classical Latin literature from 45 BC, making it over 
-                 2000 years old. Richard McClintock, a Latin professor at Hampden-Sydney College 
-                 in Virginia, looked up one of the more obscure Latin words, consectetur, from a 
-                 Lorem Ipsum passage, and going through the cites of the word in classical literature, 
-                 discovered the undoubtable source. Lorem Ipsum comes from sections 1.10.32 and 1.10.33 
-                 of "de Finibus Bonorum et Malorum" (The Extremes of Good and Evil) by Cicero, written 
-                 in 45 BC. This book is a treatise on the theory of ethics, very popular during the Renaissance.`,150)}
+                {truncate(movie?.overview,150)}
             </h1>
 
         </div>
